@@ -13,7 +13,7 @@ const OnCallScreen = () => {
 
   const handleEndCall = () => {
     dispatch(action.call.setOnCall(false));
-    navigate("/");
+    navigate("/lobby");
   };
 
   const handleMuteButton = () => {

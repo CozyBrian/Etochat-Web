@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import "./App.css";
 
 import HomeScreen from "./views/home";
+import LobbyScreen from "./views/lobby";
 import OnCallScreen from "./views/onCall";
 import WaitingScreen from "./views/waiting";
 
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<HomeScreen />} />
         <Route path="/loading" element={<WaitingScreen />} />
         <Route path="/on-call" element={<OnCallScreen />} />
+        <Route path="/lobby" element={<LobbyScreen />} />
       </Routes>
     </div>
   );
