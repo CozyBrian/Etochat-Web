@@ -1,10 +1,16 @@
-import React from 'react';
-import './App.css';
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import "./App.css";
+import HomeScreen from "./views/home";
+import WaitingScreen from "./views/waiting";
 
 function App() {
   return (
     <div className="flex justify-center items-center h-screen w-screen bg-slate-50">
-      <h1 className="text-sky-500 text-2xl">Hello There</h1>
+      <Routes>
+        <Route path="/" element={<HomeScreen />} />
+        <Route path="/loading" element={<WaitingScreen />} />
+      </Routes>
     </div>
   );
 }
