@@ -7,8 +7,8 @@ import ModeSelector from "./components/modeSelector";
 import ProfileSelector from "./components/profileselector";
 
 const HomeScreen = () => {
-  const [text, setText] = useState("");
   const User = useAppSelector((state) => state.user);
+  const [text, setText] = useState(User.username);
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
