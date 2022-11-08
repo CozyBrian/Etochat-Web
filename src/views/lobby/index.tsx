@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import Memoji from "../../assets/images/memojis";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { action } from "../../redux";
@@ -27,7 +28,13 @@ const LobbyScreen = () => {
   const userImage = Memoji.find((item) => item.id === User.profileID);
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 py-12 w-[400px] bg-white rounded-xl shadow-md">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex flex-col items-center justify-center p-4 py-12 w-[400px] bg-white rounded-xl shadow-md"
+    >
       <img
         className="w-32 h-32 rounded-full mb-1"
         src={userImage?.src}
@@ -59,7 +66,7 @@ const LobbyScreen = () => {
       >
         Logout
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import ProfileBubble from "../../components/profileBubbles";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { action } from "../../redux";
@@ -24,7 +25,13 @@ const OnCallScreen = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen w-[500px] items-center justify-between">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="flex flex-col h-screen w-[500px] items-center justify-between"
+    >
       <div className="flex flex-col items-center my-10 ">
         <div className="text-lg font-semibold">Anonymous</div>
         <CallTimer />
@@ -65,7 +72,7 @@ const OnCallScreen = () => {
           />
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
