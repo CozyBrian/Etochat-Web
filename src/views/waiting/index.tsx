@@ -11,7 +11,7 @@ const WaitingScreen = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    initCall(0, 4000)
+    initCall(0, 10000)
       .then(() => {
         navigate("/on-call");
       })
