@@ -6,8 +6,8 @@ const ProfileBubble = ({ size = 102, color = "#0080f9" }) => {
   return (
     <div className="flex items-center justify-center">
       <motion.div
-        animate={{ scale: [0.9, 1.1, 0.9] }}
-        transition={{ repeat: Infinity, delay: 0 }}
+        animate={{ scale: [0.95, 1.05, 0.95] }}
+        transition={{ repeat: Infinity, delay: 0, ease: "easeInOut" }}
         style={{
           width: size + n * 3,
           height: size + n * 3,
@@ -16,8 +16,8 @@ const ProfileBubble = ({ size = 102, color = "#0080f9" }) => {
         className={`absolute rounded-full`}
       />
       <motion.div
-        animate={{ scale: [0.9, 1.1, 0.9] }}
-        transition={{ repeat: Infinity, delay: 0.15 }}
+        animate={{ scale: [0.95, 1.05, 0.95] }}
+        transition={{ repeat: Infinity, delay: 0.15, ease: "easeInOut" }}
         style={{
           width: size + n * 2,
           height: size + n * 2,
@@ -26,8 +26,8 @@ const ProfileBubble = ({ size = 102, color = "#0080f9" }) => {
         className={`absolute rounded-full`}
       />
       <motion.div
-        animate={{ scale: [0.9, 1.1, 0.9] }}
-        transition={{ repeat: Infinity, delay: 0.3 }}
+        animate={{ scale: [0.95, 1.05, 0.95] }}
+        transition={{ repeat: Infinity, delay: 0.3, ease: "easeInOut" }}
         style={{
           width: size + n,
           height: size + n,
@@ -36,8 +36,8 @@ const ProfileBubble = ({ size = 102, color = "#0080f9" }) => {
         className={`absolute rounded-full`}
       />
       <motion.div
-        animate={{ scale: [0.9, 1.1, 0.9] }}
-        transition={{ repeat: Infinity, delay: 0.45 }}
+        animate={{ scale: [0.95, 1.05, 0.95] }}
+        transition={{ repeat: Infinity, delay: 0.45, ease: "easeInOut" }}
         style={{ width: size, height: size, backgroundColor: `${color}` }}
         className={`absolute rounded-full`}
       />

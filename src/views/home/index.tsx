@@ -48,7 +48,7 @@ const HomeScreen = () => {
           <input
             onChange={OnChangeText}
             value={text}
-            className="border border-black p-2 rounded-md"
+            className="border-2 border-gray-400 p-2 rounded-lg"
           />
         </div>
         <div className="py-4">
