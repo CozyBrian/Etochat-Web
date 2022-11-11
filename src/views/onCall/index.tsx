@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ProfileBubble from "../../components/profileBubbles";
@@ -6,7 +6,11 @@ import { useAppDispatch, useAppSelector } from "../../hooks";
 import { action } from "../../redux";
 import CallTimer from "./components/callTimer";
 
-const OnCallScreen = () => {
+const OnCallScreen = ({
+  audioRef,
+}: {
+  audioRef: React.RefObject<HTMLAudioElement>;
+}) => {
   const CallState = useAppSelector((state) => state.call);
   const dispatch = useAppDispatch();
 
@@ -38,6 +42,7 @@ const OnCallScreen = () => {
       </div>
       <div>
         <ProfileBubble color="#c2acfd" />
+        <audio ref={audioRef} autoPlay playsInline className="remote" />
       </div>
       <div className="flex flex-row my-10 gap-4 items-center">
         <button

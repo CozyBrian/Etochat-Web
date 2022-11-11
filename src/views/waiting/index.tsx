@@ -1,27 +1,90 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ProfileBubble from "../../components/profileBubbles";
 import { useAppSelector } from "../../hooks";
-import initCall from "../../services";
+import { PSUserType } from "../../@types";
+import Peer from "peerjs";
+import { Socket } from "socket.io-client";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
-const WaitingScreen = () => {
+type pageProps = {
+  socket: Socket<DefaultEventsMap, DefaultEventsMap>;
+  peer: Peer;
+  audioRef?: React.RefObject<HTMLAudioElement>;
+};
+
+const WaitingScreen = ({ socket, peer }: pageProps) => {
   const User = useAppSelector((state) => state.user);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    initCall(0, 10000)
-      .then(() => {
-        navigate("/on-call");
-      })
-      .catch((error) => {
-        navigate("/");
-        console.log(error);
+    socket?.on("accepted", async ({ user }: PSUserType) => {
+      console.log(user.id);
+      const localStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
       });
-    console.log("waiting screen");
+
+      const call = peer?.call(user.id, localStream);
+
+      call?.on("stream", (otherStream) => {
+        if (audioRef.current) {
+          audioRef.current.srcObject = otherStream;
+        }
+        console.log("calllerrrr");
+        navigate("/on-call");
+      });
+
+      call.on("close", () => {
+        if (audioRef.current) {
+          audioRef.current.srcObject = null;
+        }
+      });
+    });
+
+    peer?.on("call", async (call) => {
+      const localStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      console.log("receiverrrrrr");
+      call.answer(localStream);
+      navigate("/on-call");
+
+      socket.on("user-disconnected", () => {
+        call.close();
+        console.log("Ei");
+        navigate("/lobby");
+      });
+    });
+
+    return () => {
+      socket?.off("accepted");
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  // useEffect(() => {
+  //   socket?.on("accepted", ({ user }: PSUserType) => {
+  //     // peer?.connect(data.);
+  //     console.log(user.id);
+  //     const conn = peer?.connect(user.id);
+
+  //     conn?.on("open", () => {
+  //       navigate("/on-call");
+  //     });
+  //   });
+
+  //   peer?.on("connection", (conn) => {
+  //     navigate("/on-call");
+
+  //     conn.emit("data", MediaStream);
+  //   });
+
+  //   return () => {
+  //     socket?.off("accepted");
+  //   };
+  // }, []);
 
   return (
     <motion.div
@@ -37,6 +100,7 @@ const WaitingScreen = () => {
           Connecting you to a {User.mode === "LISTENER" ? "sharer" : "listener"}
           ...
         </div>
+        <audio ref={audioRef} autoPlay playsInline className="remote" />
       </div>
     </motion.div>
   );

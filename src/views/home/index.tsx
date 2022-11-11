@@ -7,8 +7,9 @@ import { action } from "../../redux";
 import { UserGen } from "../../utils";
 import ModeSelector from "./components/modeSelector";
 import ProfileSelector from "./components/profileselector";
+import { pageProps } from "../../@types";
 
-const HomeScreen = () => {
+const HomeScreen = ({ socket, peer }: pageProps) => {
   const User = useAppSelector((state) => state.user);
   const [text, setText] = useState(User.username);
   const dispatch = useAppDispatch();
@@ -17,7 +18,7 @@ const HomeScreen = () => {
 
   const handleSubmit = () => {
     if (User.username !== "") {
-      console.log(User);
+      socket?.emit("make-request", { user: { id: peer?.id, ...User } });
       dispatch(action.user.setUsername(text));
       navigate("/loading");
     } else {

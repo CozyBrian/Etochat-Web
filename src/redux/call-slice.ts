@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { initialStateType, UserType } from "../@types";
 
 const initialState: initialStateType = {
+  isConnected: false,
   incomingUser: undefined,
   onCall: false,
   isMicMute: false,
@@ -12,6 +13,9 @@ const callState = createSlice({
   name: "call",
   initialState,
   reducers: {
+    setIsConnected: (state, action: PayloadAction<boolean>) => {
+      state.isConnected = action.payload;
+    },
     setIncomingUser: (state, action: PayloadAction<UserType>) => {
       state.incomingUser = action.payload;
     },
