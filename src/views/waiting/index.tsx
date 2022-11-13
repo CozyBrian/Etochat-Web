@@ -16,8 +16,8 @@ type pageProps = {
 
 const WaitingScreen = ({ socket, peer }: pageProps) => {
   const User = useAppSelector((state) => state.user);
-  const audioRef = useRef<HTMLVideoElement>(null);
-  const audioRefz = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const audioRefz = useRef<HTMLAudioElement>(null);
 
   const navigate = useNavigate();
 
@@ -25,15 +25,10 @@ const WaitingScreen = ({ socket, peer }: pageProps) => {
     socket?.on("accepted", async ({ user }: PSUserType) => {
       console.log(user.id);
       const localStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
         audio: true,
       });
 
       const call = peer?.call(user.id, localStream);
-
-      if (audioRefz.current) {
-        audioRefz.current.srcObject = localStream;
-      }
 
       call?.on("stream", (otherStream) => {
         if (audioRef.current) {
@@ -52,11 +47,16 @@ const WaitingScreen = ({ socket, peer }: pageProps) => {
 
     peer?.on("call", async (call) => {
       const localStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
         audio: true,
       });
       console.log("receiverrrrrr");
       call.answer(localStream);
+
+      call?.on("stream", (otherStream) => {
+        if (audioRef.current) {
+          audioRef.current.srcObject = otherStream;
+        }
+      });
       // navigate("/on-call");
 
       socket.on("user-disconnected", () => {
@@ -108,8 +108,7 @@ const WaitingScreen = ({ socket, peer }: pageProps) => {
           ...
         </div>
         <div className="h-72">
-          <video ref={audioRef} autoPlay playsInline className="" />
-          <video ref={audioRefz} autoPlay playsInline className="" />
+          <audio ref={audioRef} autoPlay playsInline className="" />
         </div>
         {/* <audio ref={audioRef} autoPlay playsInline className="remote" /> */}
       </div>
