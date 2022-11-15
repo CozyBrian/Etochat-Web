@@ -14,13 +14,13 @@ import Peer, { MediaConnection } from "peerjs";
 import { PSUserType } from "./@types";
 import { useAppSelector } from "./hooks";
 
-// const DEVENV = "192.168.11.34";
+const DEVENV = "192.168.11.34";
 // const DEVENVVV = "172.20.10.2";
-const DEVENVV = "localhost";
+// const DEVENVV = "localhost";
 
-const socket = io(`${DEVENVV}:3001`);
+const socket = io(`${DEVENV}:3001`);
 const peer = new Peer({
-  host: DEVENVV,
+  host: DEVENV,
   port: 3001,
   path: "/peer",
   debug: 3,
@@ -63,8 +63,8 @@ function App() {
       console.log(socket.id);
     });
 
-    socket.on("hellot", () => {
-      console.log("IM IN THE ROOM");
+    socket.on("on-called", (data) => {
+      socket.emit("join-room", data);
     });
 
     peer.on("open", function (id) {
@@ -85,8 +85,8 @@ function App() {
         }
       });
 
-      socket.on("user-disconnected", () => {
-        console.log("USER HAS DISCONNECTED");
+      socket.on("user-disconnected", (data) => {
+        console.log(`USER HAS DISCONNECTED - From: ${data}`);
         call?.close();
         if (audioRef.current) {
           audioRef.current.srcObject = null;
@@ -105,7 +105,6 @@ function App() {
 
     return () => {
       socket.off("connect");
-
       socket.off("user-disconnected");
       peer.off("call");
       peer.off("open");
@@ -131,6 +130,9 @@ function App() {
 
         const call = peer?.call(user.pid, localStream);
         setPeerCall(call);
+        socket.emit("calling", {
+          user,
+        });
 
         call?.on("stream", (otherStream) => {
           if (audioRef.current) {
@@ -139,8 +141,8 @@ function App() {
           console.log("RECIEVED");
         });
 
-        socket.on("user-disconnected", () => {
-          console.log("USER HAS DISCONNECTED");
+        socket.on("user-disconnected", (data) => {
+          console.log(`USER HAS DISCONNECTED - From: ${data}`);
           call?.close();
           if (audioRef.current) {
             audioRef.current.srcObject = null;
@@ -153,7 +155,6 @@ function App() {
         call.on("close", () => {
           if (audioRef.current) {
             audioRef.current.srcObject = null;
-            localStream.getTracks().forEach((track) => track.stop());
           }
         });
       });

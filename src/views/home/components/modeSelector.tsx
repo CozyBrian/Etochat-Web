@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { useAppDispatch } from "../../../hooks";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { action } from "../../../redux";
 
 const ModeSelector = () => {
-  const [selected, setSelected] = useState("SHARER");
+  const mode = useAppSelector((state) => state.user.mode);
+  const [selected, setSelected] = useState(mode);
   const dispatch = useAppDispatch();
 
   const options: {
