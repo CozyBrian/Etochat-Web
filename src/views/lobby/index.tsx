@@ -4,8 +4,9 @@ import { motion } from "framer-motion";
 import Memoji from "../../assets/images/memojis";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { action } from "../../redux";
+import { pageProps } from "../../@types";
 
-const LobbyScreen = () => {
+const LobbyScreen = ({ socket, peer }: pageProps) => {
   const User = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
@@ -18,6 +19,7 @@ const LobbyScreen = () => {
   };
 
   const handleFind = () => {
+    socket?.emit("make-request", { user: { id: peer?.id, ...User } });
     Navigate("/loading");
   };
 

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import "./App.css";
 import { AnimatePresence } from "framer-motion";
 
@@ -10,11 +10,17 @@ import WaitingScreen from "./views/waiting";
 import { io } from "socket.io-client";
 import { useDispatch } from "react-redux";
 import { action } from "./redux";
-import Peer from "peerjs";
+import Peer, { MediaConnection } from "peerjs";
+import { PSUserType } from "./@types";
+import { useAppSelector } from "./hooks";
 
-const socket = io("192.168.11.34:3001");
+// const DEVENV = "192.168.11.34";
+// const DEVENVVV = "172.20.10.2";
+const DEVENVV = "localhost";
+
+const socket = io(`${DEVENVV}:3001`);
 const peer = new Peer({
-  host: "192.168.11.34",
+  host: DEVENVV,
   port: 3001,
   path: "/peer",
   debug: 3,
@@ -44,9 +50,11 @@ const peer = new Peer({
 });
 
 function App() {
+  const [peerCall, setPeerCall] = useState<MediaConnection>();
+  const onCall = useAppSelector((state) => state.call.onCall);
   const dispatch = useDispatch();
-
-  const AudioRef = useRef<HTMLAudioElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -59,12 +67,98 @@ function App() {
       console.log("My peer ID is: " + id);
     });
 
+    peer?.on("call", async (call) => {
+      const localStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      setPeerCall(call);
+      console.log("SENT");
+      call.answer(localStream);
+
+      call?.on("stream", (otherStream) => {
+        if (audioRef.current) {
+          audioRef.current.srcObject = otherStream;
+        }
+      });
+
+      socket.on("user-disconnected", () => {
+        console.log("USER HAS DISCONNECTED");
+        call?.close();
+        if (audioRef.current) {
+          audioRef.current.srcObject = null;
+        }
+        navigate("/lobby");
+      });
+
+      call.on("close", () => {
+        if (audioRef.current) {
+          audioRef.current.srcObject = null;
+          localStream.getTracks().forEach((track) => track.stop());
+        }
+      });
+      navigate("/on-call");
+    });
+
     return () => {
       socket.off("connect");
+
+      socket.off("user-disconnected");
+      peer.off("call");
       peer.off("open");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const EndCall = () => {
+    peerCall?.close();
+    if (audioRef.current) {
+      audioRef.current.srcObject = null;
+    }
+    socket.emit("end-call");
+  };
+
+  useEffect(() => {
+    if (!onCall)
+      socket?.on("accepted", async ({ user }: PSUserType) => {
+        console.log(user.id);
+        const localStream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+
+        const call = peer?.call(user.id, localStream);
+        setPeerCall(call);
+
+        call?.on("stream", (otherStream) => {
+          if (audioRef.current) {
+            audioRef.current.srcObject = otherStream;
+          }
+          console.log("RECIEVED");
+        });
+
+        socket.on("user-disconnected", () => {
+          console.log("USER HAS DISCONNECTED");
+          call?.close();
+          if (audioRef.current) {
+            audioRef.current.srcObject = null;
+          }
+          navigate("/lobby");
+        });
+
+        navigate("/on-call");
+
+        call.on("close", () => {
+          if (audioRef.current) {
+            audioRef.current.srcObject = null;
+            localStream.getTracks().forEach((track) => track.stop());
+          }
+        });
+      });
+
+    return () => {
+      socket?.off("accepted");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onCall]);
 
   const location = useLocation();
   return (
@@ -75,19 +169,20 @@ function App() {
             path="/"
             element={<HomeScreen socket={socket} peer={peer} />}
           />
-          <Route
-            path="/loading"
-            element={
-              <WaitingScreen socket={socket} peer={peer} audioRef={AudioRef} />
-            }
-          />
+          <Route path="/loading" element={<WaitingScreen />} />
           <Route
             path="/on-call"
-            element={<OnCallScreen audioRef={AudioRef} />}
+            element={<OnCallScreen onEnd={() => EndCall()} />}
           />
-          <Route path="/lobby" element={<LobbyScreen />} />
+          <Route
+            path="/lobby"
+            element={<LobbyScreen socket={socket} peer={peer} />}
+          />
         </Routes>
       </AnimatePresence>
+      <div className="h-72 hidden">
+        <audio ref={audioRef} autoPlay playsInline className="" />
+      </div>
     </div>
   );
 }

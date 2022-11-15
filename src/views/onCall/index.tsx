@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ProfileBubble from "../../components/profileBubbles";
@@ -6,11 +6,11 @@ import { useAppDispatch, useAppSelector } from "../../hooks";
 import { action } from "../../redux";
 import CallTimer from "./components/callTimer";
 
-const OnCallScreen = ({
-  audioRef,
-}: {
-  audioRef: React.RefObject<HTMLAudioElement>;
-}) => {
+type pageProps = {
+  onEnd: () => void;
+};
+
+const OnCallScreen = ({ onEnd }: pageProps) => {
   const CallState = useAppSelector((state) => state.call);
   const dispatch = useAppDispatch();
 
@@ -18,6 +18,7 @@ const OnCallScreen = ({
 
   const handleEndCall = () => {
     dispatch(action.call.setOnCall(false));
+    onEnd();
     navigate("/lobby");
   };
 
@@ -27,6 +28,11 @@ const OnCallScreen = ({
   const handleSpeakerButton = () => {
     dispatch(action.call.ToggleIsLoudSpeaker());
   };
+
+  useEffect(() => {
+    dispatch(action.call.setOnCall(true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <motion.div
@@ -42,7 +48,6 @@ const OnCallScreen = ({
       </div>
       <div>
         <ProfileBubble color="#c2acfd" />
-        <audio ref={audioRef} autoPlay playsInline className="remote" />
       </div>
       <div className="flex flex-row my-10 gap-4 items-center">
         <button
