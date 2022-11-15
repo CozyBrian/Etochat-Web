@@ -18,7 +18,9 @@ const HomeScreen = ({ socket, peer }: pageProps) => {
 
   const handleSubmit = () => {
     if (User.username !== "") {
-      socket?.emit("make-request", { user: { id: peer?.id, ...User } });
+      socket?.emit("make-request", {
+        user: { pid: peer?.id, sid: socket.id, ...User },
+      });
       dispatch(action.user.setUsername(text));
       navigate("/loading");
     } else {

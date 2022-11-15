@@ -16,7 +16,8 @@ export type UserType = {
 
 export type PSUserType = {
   user: {
-    id: string;
+    pid: string;
+    sid: string;
     username: string;
     profileID: string;
     mode: "SHARER" | "LISTENER";

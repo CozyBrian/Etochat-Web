@@ -63,6 +63,10 @@ function App() {
       console.log(socket.id);
     });
 
+    socket.on("hellot", () => {
+      console.log("IM IN THE ROOM");
+    });
+
     peer.on("open", function (id) {
       console.log("My peer ID is: " + id);
     });
@@ -120,12 +124,12 @@ function App() {
   useEffect(() => {
     if (!onCall)
       socket?.on("accepted", async ({ user }: PSUserType) => {
-        console.log(user.id);
+        console.log(`accepted id is ${user.sid}`);
         const localStream = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
 
-        const call = peer?.call(user.id, localStream);
+        const call = peer?.call(user.pid, localStream);
         setPeerCall(call);
 
         call?.on("stream", (otherStream) => {

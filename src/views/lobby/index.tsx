@@ -19,7 +19,9 @@ const LobbyScreen = ({ socket, peer }: pageProps) => {
   };
 
   const handleFind = () => {
-    socket?.emit("make-request", { user: { id: peer?.id, ...User } });
+    socket?.emit("make-request", {
+      user: { pid: peer?.id, sid: socket.id, ...User },
+    });
     Navigate("/loading");
   };
 
