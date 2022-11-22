@@ -96,6 +96,7 @@ function App() {
           audioRef.current.srcObject = null;
         }
         navigate("/lobby");
+        socket.emit("leave-peer");
       });
 
       call.on("close", () => {
@@ -125,45 +126,46 @@ function App() {
   };
 
   useEffect(() => {
-    if (!onCall)
-      socket.on("accepted", async ({ user }: PSUserType) => {
-        console.log(`accepted id is ${user.sid}`);
+    // if (!onCall)
+    socket.on("accepted", async ({ user }: PSUserType) => {
+      console.log(`accepted id is ${user.sid}`);
 
-        const localStream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
-
-        const call = peer.call(user.pid, localStream);
-        setPeerCall(call);
-        socket.emit("calling", {
-          user,
-        });
-
-        call.on("stream", (otherStream) => {
-          if (audioRef.current) {
-            audioRef.current.srcObject = otherStream;
-          }
-          console.log("RECIEVED");
-        });
-
-        socket.on("user-disconnected", (data) => {
-          console.log(`USER HAS DISCONNECTED - From: ${data}`);
-          if (audioRef.current) {
-            audioRef.current.srcObject = null;
-          }
-          call.close();
-          navigate("/lobby");
-        });
-
-        navigate("/on-call");
-
-        call.on("close", () => {
-          if (audioRef.current) {
-            audioRef.current.srcObject = null;
-            localStream.getTracks().forEach((track) => track.stop());
-          }
-        });
+      const localStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
       });
+
+      const call = peer.call(user.pid, localStream);
+      setPeerCall(call);
+      socket.emit("calling", {
+        user,
+      });
+
+      call.on("stream", (otherStream) => {
+        if (audioRef.current) {
+          audioRef.current.srcObject = otherStream;
+        }
+        console.log("RECIEVED");
+      });
+
+      socket.on("user-disconnected", (data) => {
+        console.log(`USER HAS DISCONNECTED - From: ${data}`);
+        if (audioRef.current) {
+          audioRef.current.srcObject = null;
+        }
+        call.close();
+        navigate("/lobby");
+        socket.emit("leave-peer");
+      });
+
+      navigate("/on-call");
+
+      call.on("close", () => {
+        if (audioRef.current) {
+          audioRef.current.srcObject = null;
+          localStream.getTracks().forEach((track) => track.stop());
+        }
+      });
+    });
 
     return () => {
       socket?.off("accepted");
