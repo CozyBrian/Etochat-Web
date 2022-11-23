@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Memoji from "../../assets/images/memojis";
@@ -11,6 +11,11 @@ const LobbyScreen = ({ socket, peer }: pageProps) => {
   const dispatch = useAppDispatch();
 
   const Navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(action.call.setOnCall(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChangeMode = () => {
     dispatch(

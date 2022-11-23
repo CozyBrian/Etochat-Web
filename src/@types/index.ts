@@ -29,5 +29,6 @@ export type initialStateType = {
   incomingUser?: UserType;
   onCall: boolean;
   isMicMute: boolean;
+  remoteMicMute: boolean;
   isLoudSpeaker: boolean;
 };

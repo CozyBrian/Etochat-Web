@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import ProfileBubble from "../../components/profileBubbles";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { action } from "../../redux";
@@ -46,7 +46,26 @@ const OnCallScreen = ({ onEnd, micMute }: pageProps) => {
       className="flex flex-col h-screen w-[500px] items-center justify-between"
     >
       <div className="flex flex-col items-center my-10 ">
-        <div className="text-lg font-semibold">Anonymous</div>
+        <div className="flex flex-row items-center text-lg font-semibold pl-4">
+          <div className="duration-200">Anonymous</div>
+          <div className="w-4">
+            <AnimatePresence>
+              {CallState.remoteMicMute && (
+                <motion.img
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="w-4 ml-1"
+                  src={
+                    require("../../assets/images/icons/red-mic-mute.svg")
+                      .default
+                  }
+                  alt="rem-mic-mute"
+                />
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
         <CallTimer />
       </div>
       <div>

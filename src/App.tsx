@@ -14,8 +14,16 @@ import Peer, { MediaConnection } from "peerjs";
 import { PSUserType } from "./@types";
 import { useAppSelector } from "./hooks";
 
-const socket = io(`https://etochat.onrender.com`);
+// const DEVENV = "192.168.11.34";
+// const DEVENVVV = "172.20.10.2";
+const DEVENVV = "localhost";
+
+const socket = io(`${DEVENVV}:3001`);
 const peer = new Peer({
+  host: DEVENVV,
+  port: 3001,
+  path: "/peer",
+  debug: 0,
   secure: false,
   config: {
     iceServers: [
@@ -49,6 +57,13 @@ function App() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const navigate = useNavigate();
   const MyLocalStream = useRef<MediaStream>();
+
+  socket.on("user-mic-mute", (data) => {
+    if (socket.id !== data.sid) {
+      const remoteMicstate = !callState.remoteMicMute;
+      dispatch(action.call.setRemoteMicMute(remoteMicstate));
+    }
+  });
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -118,6 +133,7 @@ function App() {
       audioRef.current.srcObject = null;
     }
     socket.emit("end-call");
+    dispatch(action.call.setOnCall(false));
   };
 
   const MuteMic = () => {
@@ -126,6 +142,8 @@ function App() {
       .find((track) => track.kind === "audio");
 
     if (audioStream) audioStream.enabled = !audioStream.enabled;
+
+    socket.emit("mic-mute", { sid: socket.id });
   };
 
   useEffect(() => {

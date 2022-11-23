@@ -6,6 +6,7 @@ const initialState: initialStateType = {
   incomingUser: undefined,
   onCall: false,
   isMicMute: false,
+  remoteMicMute: false,
   isLoudSpeaker: false,
 };
 
@@ -24,10 +25,14 @@ const callState = createSlice({
       if (action.payload === false) {
         state.isMicMute = false;
         state.isLoudSpeaker = false;
+        state.remoteMicMute = false;
       }
     },
     ToggleIsMicMute: (state) => {
       state.isMicMute = !state.isMicMute;
+    },
+    setRemoteMicMute: (state, action: PayloadAction<boolean>) => {
+      state.remoteMicMute = action.payload;
     },
     ToggleIsLoudSpeaker: (state) => {
       state.isLoudSpeaker = !state.isLoudSpeaker;
