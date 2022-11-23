@@ -8,9 +8,10 @@ import CallTimer from "./components/callTimer";
 
 type pageProps = {
   onEnd: () => void;
+  micMute: () => void;
 };
 
-const OnCallScreen = ({ onEnd }: pageProps) => {
+const OnCallScreen = ({ onEnd, micMute }: pageProps) => {
   const CallState = useAppSelector((state) => state.call);
   const dispatch = useAppDispatch();
 
@@ -24,7 +25,9 @@ const OnCallScreen = ({ onEnd }: pageProps) => {
 
   const handleMuteButton = () => {
     dispatch(action.call.ToggleIsMicMute());
+    micMute();
   };
+
   const handleSpeakerButton = () => {
     dispatch(action.call.ToggleIsLoudSpeaker());
   };

@@ -16,7 +16,7 @@ import { useAppSelector } from "./hooks";
 
 const socket = io(`https://etochat.onrender.com`);
 const peer = new Peer({
-  secure: true,
+  secure: false,
   config: {
     iceServers: [
       { url: "stun:stun01.sipphone.com" },
@@ -44,10 +44,11 @@ const peer = new Peer({
 
 function App() {
   const [peerCall, setPeerCall] = useState<MediaConnection>();
-  const onCall = useAppSelector((state) => state.call.onCall);
+  const callState = useAppSelector((state) => state.call);
   const dispatch = useDispatch();
   const audioRef = useRef<HTMLAudioElement>(null);
   const navigate = useNavigate();
+  const MyLocalStream = useRef<MediaStream>();
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -72,6 +73,7 @@ function App() {
       const localStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
+      MyLocalStream.current = localStream;
       setPeerCall(call);
       console.log("SENT");
       call.answer(localStream);
@@ -118,6 +120,14 @@ function App() {
     socket.emit("end-call");
   };
 
+  const MuteMic = () => {
+    const audioStream = MyLocalStream.current
+      ?.getTracks()
+      .find((track) => track.kind === "audio");
+
+    if (audioStream) audioStream.enabled = !audioStream.enabled;
+  };
+
   useEffect(() => {
     // if (!onCall)
     socket.on("accepted", async ({ user }: PSUserType) => {
@@ -126,6 +136,7 @@ function App() {
       const localStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
+      MyLocalStream.current = localStream;
 
       const call = peer.call(user.pid, localStream);
       setPeerCall(call);
@@ -164,7 +175,7 @@ function App() {
       socket?.off("accepted");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onCall]);
+  }, [callState.onCall]);
 
   const location = useLocation();
   return (
@@ -178,7 +189,9 @@ function App() {
           <Route path="/loading" element={<WaitingScreen />} />
           <Route
             path="/on-call"
-            element={<OnCallScreen onEnd={() => EndCall()} />}
+            element={
+              <OnCallScreen micMute={() => MuteMic()} onEnd={() => EndCall()} />
+            }
           />
           <Route
             path="/lobby"
@@ -187,7 +200,7 @@ function App() {
         </Routes>
       </AnimatePresence>
       <div className="h-72 hidden">
-        <audio ref={audioRef} autoPlay playsInline className="" />
+        <audio ref={audioRef} autoPlay playsInline />
       </div>
     </div>
   );
