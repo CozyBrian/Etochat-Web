@@ -16,11 +16,7 @@ import { useAppSelector } from "./hooks";
 
 const socket = io(`https://etochat.onrender.com`);
 const peer = new Peer({
-  // host: "etochat.onrender.com",
-  // path: "/peer",
-  // port: 10000,
   secure: true,
-  // debug: 3,
   config: {
     iceServers: [
       { url: "stun:stun01.sipphone.com" },
