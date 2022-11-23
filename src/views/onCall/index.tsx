@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import ProfileBubble from "../../components/profileBubbles";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { action } from "../../redux";
