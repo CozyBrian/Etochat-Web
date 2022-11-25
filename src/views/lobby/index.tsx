@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Memoji from "../../assets/images/memojis";
@@ -8,6 +8,7 @@ import { pageProps } from "../../@types";
 
 const LobbyScreen = ({ socket, peer }: pageProps) => {
   const User = useAppSelector((state) => state.user);
+  const [findClicked, setFindClicked] = useState(false);
   const dispatch = useAppDispatch();
 
   const Navigate = useNavigate();
@@ -24,10 +25,13 @@ const LobbyScreen = ({ socket, peer }: pageProps) => {
   };
 
   const handleFind = () => {
-    socket?.emit("make-request", {
-      user: { pid: peer?.id, sid: socket.id, ...User },
-    });
-    Navigate("/loading");
+    if (!findClicked) {
+      socket?.emit("make-request", {
+        user: { pid: peer?.id, sid: socket.id, ...User },
+      });
+      Navigate("/loading");
+      setFindClicked(true);
+    }
   };
 
   const handleLogOut = () => {
