@@ -14,16 +14,8 @@ import Peer, { MediaConnection } from "peerjs";
 import { PSUserType } from "./@types";
 import { useAppSelector } from "./hooks";
 
-// const DEVENV = "192.168.11.34";
-// const DEVENVVV = "172.20.10.2";
-const DEVENVV = "localhost";
-
-const socket = io(`${DEVENVV}:3001`);
+const socket = io(`https://etochat.onrender.com`);
 const peer = new Peer({
-  host: DEVENVV,
-  port: 3001,
-  path: "/peer",
-  debug: 0,
   secure: false,
   config: {
     iceServers: [
