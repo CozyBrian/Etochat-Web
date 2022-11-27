@@ -69,7 +69,7 @@ const OnCallScreen = ({ onEnd, micMute }: pageProps) => {
         <CallTimer />
       </div>
       <div>
-        <ProfileBubble color="#c2acfd" />
+        <ProfileBubble color="#c2acfd" id={callState.incomingUser?.profileID} />
       </div>
       <div className="flex flex-row my-10 gap-4 items-center">
         <button
