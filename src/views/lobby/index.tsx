@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks";
 import { action } from "../../redux";
 import { pageProps } from "../../@types";
 
-const LobbyScreen = ({ socket, peer }: pageProps) => {
+const LobbyScreen = ({ socket }: pageProps) => {
   const User = useAppSelector((state) => state.user);
   const [findClicked, setFindClicked] = useState(false);
   const dispatch = useAppDispatch();
@@ -27,7 +27,7 @@ const LobbyScreen = ({ socket, peer }: pageProps) => {
   const handleFind = () => {
     if (!findClicked) {
       socket?.emit("make-request", {
-        user: { pid: peer?.id, sid: socket.id, ...User },
+        user: { ...User },
       });
       Navigate("/loading");
       setFindClicked(true);

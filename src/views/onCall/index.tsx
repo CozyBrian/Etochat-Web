@@ -12,7 +12,7 @@ type pageProps = {
 };
 
 const OnCallScreen = ({ onEnd, micMute }: pageProps) => {
-  const CallState = useAppSelector((state) => state.call);
+  const callState = useAppSelector((state) => state.call);
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
@@ -47,10 +47,10 @@ const OnCallScreen = ({ onEnd, micMute }: pageProps) => {
     >
       <div className="flex flex-col items-center my-10 ">
         <div className="flex flex-row items-center text-lg font-semibold pl-4">
-          <div className="duration-200">Anonymous</div>
+          <div className="duration-200">{callState.incomingUser?.username}</div>
           <div className="w-4">
             <AnimatePresence>
-              {CallState.remoteMicMute && (
+              {callState.remoteMicMute && (
                 <motion.img
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -75,7 +75,7 @@ const OnCallScreen = ({ onEnd, micMute }: pageProps) => {
         <button
           onClick={handleMuteButton}
           className={`w-10 h-10 p-2 rounded-full ${
-            CallState.isMicMute ? "bg-[#868686]" : "bg-[#d4d4d4]"
+            callState.isMicMute ? "bg-[#868686]" : "bg-[#d4d4d4]"
           } duration-150`}
         >
           <img
@@ -95,7 +95,7 @@ const OnCallScreen = ({ onEnd, micMute }: pageProps) => {
         <button
           onClick={handleSpeakerButton}
           className={`w-10 h-10 p-2 rounded-full ${
-            CallState.isLoudSpeaker ? "bg-[#868686]" : "bg-[#d4d4d4]"
+            callState.isLoudSpeaker ? "bg-[#868686]" : "bg-[#d4d4d4]"
           } duration-150`}
         >
           <img

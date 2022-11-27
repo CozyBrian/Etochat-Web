@@ -1,13 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { UserType } from "../@types";
 import Memoji from "../assets/images/memojis";
 
-type initialStateType = {
-  username: string;
-  profileID: string;
-  mode: "SHARER" | "LISTENER";
-};
-
-const initialState: initialStateType = {
+const initialState: UserType = {
+  pid: "",
+  sid: "",
   username: "",
   profileID: Memoji[0].id,
   mode: "SHARER",
@@ -29,6 +26,12 @@ const userState = createSlice({
     },
     setMode: (state, action: PayloadAction<"SHARER" | "LISTENER">) => {
       state.mode = action.payload;
+    },
+    setSocketID: (state, action: PayloadAction<string>) => {
+      state.sid = action.payload;
+    },
+    setPeerID: (state, action: PayloadAction<string>) => {
+      state.pid = action.payload;
     },
   },
 });

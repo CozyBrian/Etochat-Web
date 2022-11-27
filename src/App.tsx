@@ -53,6 +53,7 @@ const peer = new Peer({
 function App() {
   const [peerCall, setPeerCall] = useState<MediaConnection>();
   const callState = useAppSelector((state) => state.call);
+  const userState = useAppSelector((state) => state.user);
   const dispatch = useDispatch();
   const audioRef = useRef<HTMLAudioElement>(null);
   const navigate = useNavigate();
@@ -70,14 +71,17 @@ function App() {
       dispatch(action.call.setIsConnected(true));
       console.log("IN");
       console.log(socket.id);
+      dispatch(action.user.setSocketID(socket.id));
     });
 
-    socket.on("on-called", (data) => {
+    socket.on("on-called", (data, user) => {
+      dispatch(action.call.setIncomingUser(user));
       socket.emit("join-room", data);
     });
 
     peer.on("open", function (id) {
       console.log("My peer ID is: " + id);
+      dispatch(action.user.setPeerID(id));
     });
 
     socket.on("bank-time-out", () => {
@@ -147,7 +151,6 @@ function App() {
   };
 
   useEffect(() => {
-    // if (!onCall)
     socket.on("accepted", async ({ user }: PSUserType) => {
       console.log(`accepted id is ${user.sid}`);
 
@@ -158,9 +161,14 @@ function App() {
 
       const call = peer.call(user.pid, localStream);
       setPeerCall(call);
-      socket.emit("calling", {
-        user,
-      });
+      socket.emit(
+        "calling",
+        {
+          user,
+        },
+        userState
+      );
+      dispatch(action.call.setIncomingUser(user));
 
       call.on("stream", (otherStream) => {
         if (audioRef.current) {
@@ -193,7 +201,7 @@ function App() {
       socket?.off("accepted");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [callState.onCall]);
+  }, [navigate, dispatch]);
 
   const location = useLocation();
   return (
