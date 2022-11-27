@@ -1,3 +1,4 @@
 export const UserGen = () => {
-  return "Anon#369";
+  const id = Math.floor(Math.random() * 10000);
+  return `Anonymous#${id}`;
 };
